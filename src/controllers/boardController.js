@@ -6,7 +6,7 @@
 // Controller là tầng xử lý điều phối request: body,query,params,files,cookies,jwtDecoded
 
 import { StatusCodes } from "http-status-codes"
-
+import ApiError from "~/utils/ApiError"
 const createNew = async (req, res, next) => {
   try {
     console.log("req.body: ", req.body)
@@ -16,9 +16,10 @@ const createNew = async (req, res, next) => {
       message: "NOTE: API create new board controller",
     })
   } catch (error) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      errors: error.message,
-    })
+    next(error)
+    // res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+    //   errors: error.message,
+    // })
   }
 }
 
