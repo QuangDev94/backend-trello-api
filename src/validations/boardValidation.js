@@ -18,13 +18,10 @@ const createNew = async (req, res, next) => {
     description: Joi.string().required().min(3).max(256).trim().strict(),
   })
   try {
-    console.log("req.body: ", req.body)
     // abortEarly: check all fields invalid
     await correctCondition.validateAsync(req.body, { abortEarly: false })
-    //     next()
-    res.status(StatusCodes.CREATED).json({
-      message: "NOTE: API create new board",
-    })
+    // Validation xong sẽ nhảy sang controller
+    next()
   } catch (error) {
     console.log("error:", error)
     res
