@@ -10,7 +10,6 @@ import { boardService } from "~/services/boardService"
 
 const createNew = async (req, res, next) => {
   try {
-    console.log("req.body: ", req.body)
     //     Điều hướng dữ liệu sang tầng service
     const createdBoard = await boardService.createNew(req.body)
     //     Có kết quả sẽ trả về phía client tại tầng controller
