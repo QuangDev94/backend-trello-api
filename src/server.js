@@ -22,6 +22,7 @@ const START_SERVER = () => {
   app.use("/v1", APIs_V1)
   // Middleware xử lý lỗi
   app.use(errorHandlingMiddleware)
+  
   app.listen(env.APP_PORT, env.APP_HOST, () => {
     console.log(
       `Hello ${env.AUTHOR}, I am running at http://${env.APP_HOST}:${env.APP_PORT}/`,

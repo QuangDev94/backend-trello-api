@@ -26,6 +26,17 @@ const createNew = async (reqBody) => {
   }
 }
 
+const getDetails = async (reqParamId) => {
+  try {
+    const getDetailsBoard = await boardModel.getDetails(reqParamId)
+
+    return getDetailsBoard
+  } catch (error) {
+    throw error
+  }
+}
+
 export const boardService = {
   createNew,
+  getDetails,
 }
