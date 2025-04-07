@@ -1,7 +1,8 @@
 /* eslint-disable no-useless-catch */
+import { StatusCodes } from "http-status-codes"
 import { boardModel } from "~/models/boardModel"
 import ApiError from "~/utils/ApiError"
-
+import { cloneDeep } from "lodash"
 /**
  * Updated by trungquandev.com's author on August 17 2023
  * YouTube: https://youtube.com/@trungquandev
@@ -29,8 +30,20 @@ const createNew = async (reqBody) => {
 const getDetails = async (reqParamId) => {
   try {
     const getDetailsBoard = await boardModel.getDetails(reqParamId)
+    if (!getDetailsBoard) {
+      throw new ApiError(StatusCodes.NOT_FOUND, "Board not found!")
+    }
+    // deep clone 1 board mới để xử lý để ko ảnh hưởng tới board ban đầu nếu gán trực tiếp
+    const resBoard = cloneDeep(getDetailsBoard)
+    // Thay đổi cấu trúc dữ liệu (tạo 1 mảng card có chung columnId vào column)
+    resBoard.columns.forEach((column) => {
+      column.cards = resBoard.cards.filter(
+        (card) => card.columnId.toString() === column._id.toString(),
+      )
+    })
 
-    return getDetailsBoard
+    delete resBoard.cards
+    return resBoard
   } catch (error) {
     throw error
   }
