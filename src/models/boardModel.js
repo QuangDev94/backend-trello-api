@@ -49,6 +49,7 @@ const findOneById = async (id) => {
   }
 }
 
+// query tổng hợp (aggregate) để lấy toàn bộ Columns và Card thuộc về Board
 const getDetails = async (id) => {
   try {
     const result = await GET_DB()
