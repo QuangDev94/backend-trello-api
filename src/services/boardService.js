@@ -3,11 +3,6 @@ import { StatusCodes } from "http-status-codes"
 import { boardModel } from "~/models/boardModel"
 import ApiError from "~/utils/ApiError"
 import { cloneDeep } from "lodash"
-/**
- * Updated by trungquandev.com's author on August 17 2023
- * YouTube: https://youtube.com/@trungquandev
- * "A bit of fragrance clings to the hand that gives flowers!"
- */
 import { slugify } from "~/utils/formatters"
 
 const createNew = async (reqBody) => {
@@ -20,6 +15,10 @@ const createNew = async (reqBody) => {
     const createdBoard = await boardModel.createNew(newBoard)
     //     Lấy bản ghi board sau khi gọi
     const getNewBoard = await boardModel.findOneById(createdBoard.insertedId)
+
+    if (getNewBoard) {
+      getNewBoard.columns = []
+    }
     // Làm thêm các xử lý logic khác với các Collection khác tùy đặc thù dự án
     return getNewBoard
   } catch (error) {

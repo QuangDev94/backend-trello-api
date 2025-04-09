@@ -1,8 +1,3 @@
-/**
- * Updated by trungquandev.com's author on August 17 2023
- * YouTube: https://youtube.com/@trungquandev
- * "A bit of fragrance clings to the hand that gives flowers!"
- */
 import express from "express"
 import { StatusCodes } from "http-status-codes"
 import { boardValidation } from "~/validations/boardValidation"
@@ -18,7 +13,6 @@ Router.route("/")
   })
   .post(boardValidation.createNew, boardController.createNew)
 
-Router.route("/:id")
-  .get(boardController.getDetails)
+Router.route("/:id").get(boardController.getDetails)
 
 export const boardRoutes = Router
