@@ -1,6 +1,6 @@
 import Joi from "joi"
 import { GET_DB } from "~/config/mongodb"
-import { ObjectId, ReturnDocument } from "mongodb"
+import { ObjectId } from "mongodb"
 import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from "~/utils/validators"
 import { BOARD_TYPES } from "~/utils/constants"
 import { columnModel } from "./columnModel"
@@ -20,6 +20,7 @@ const BOARD_COLLECTION_SCHEMA = Joi.object({
   updatedAt: Joi.date().timestamp("javascript").default(null),
   _destroy: Joi.boolean().default(false),
 })
+const INVALID_UPDATE_FIELD = ["_id", "createdAt"]
 
 const validateBeforeCreate = async (data) => {
   return await BOARD_COLLECTION_SCHEMA.validateAsync(data, {
@@ -35,6 +36,39 @@ const createNew = async (data) => {
       .insertOne(validData)
 
     return createdBoard
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+const update = async (reqParamId, updateData) => {
+  // Ko cho phép cập nhật các trường trong INVALID_UPDATE_FIELD
+  Object.keys(updateData).forEach((fieldName) => {
+    if (INVALID_UPDATE_FIELD.includes(fieldName)) {
+      delete updateData[fieldName]
+    }
+  })
+  const transfromcolumnOrderIds = updateData.columnOrderIds.map(
+    (c) => new ObjectId(c),
+  )
+  try {
+    const result = await GET_DB()
+      .collection(BOARD_COLLECTION_NAME)
+      .findOneAndUpdate(
+        {
+          _id: new ObjectId(reqParamId),
+        },
+        {
+          $set: {
+            ...updateData,
+            columnOrderIds: transfromcolumnOrderIds,
+          },
+        },
+        {
+          returnDocument: "after",
+        },
+      )
+    return result
   } catch (error) {
     throw new Error(error)
   }
@@ -102,10 +136,10 @@ const pushColumnOrderIds = async (column) => {
       .findOneAndUpdate(
         { _id: new ObjectId(column.boardId) },
         { $push: { columnOrderIds: new ObjectId(column._id) } },
-        { ReturnDocument: "after" },
+        { returnDocument: "after" },
       )
 
-    return result.value
+    return result
   } catch (error) {
     throw new Error(error)
   }
@@ -118,4 +152,5 @@ export const boardModel = {
   findOneById,
   getDetails,
   pushColumnOrderIds,
+  update,
 }
