@@ -20,7 +20,7 @@ const COLUMN_COLLECTION_SCHEMA = Joi.object({
   updatedAt: Joi.date().timestamp("javascript").default(null),
   _destroy: Joi.boolean().default(false),
 })
-
+const INVALID_UPDATE_FIELD = ["_id", "createdAt", "boardId"]
 const validateBeforeCreate = async (data) => {
   return await COLUMN_COLLECTION_SCHEMA.validateAsync(data, {
     abortEarly: true,
@@ -40,6 +40,39 @@ const createNew = async (data) => {
       .insertOne(exactValidData)
 
     return createColumn
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+const update = async (reqParamId, updateData) => {
+  // Ko cho phép cập nhật các trường trong INVALID_UPDATE_FIELD
+  Object.keys(updateData).forEach((fieldName) => {
+    if (INVALID_UPDATE_FIELD.includes(fieldName)) {
+      delete updateData[fieldName]
+    }
+  })
+  const transfromCardOrderIds = updateData.cardOrderIds.map(
+    (c) => new ObjectId(c),
+  )
+  console.log("transfromCardOrderIds: ", transfromCardOrderIds)
+  try {
+    const result = await GET_DB()
+      .collection(COLUMN_COLLECTION_NAME)
+      .findOneAndUpdate(
+        {
+          _id: new ObjectId(reqParamId),
+        },
+        {
+          $set: {
+            cardOrderIds: transfromCardOrderIds,
+          },
+        },
+        {
+          returnDocument: "after",
+        },
+      )
+    return result
   } catch (error) {
     throw new Error(error)
   }
@@ -87,4 +120,5 @@ export const columnModel = {
   createNew,
   findOneById,
   pushCardOrderIds,
+  update,
 }
