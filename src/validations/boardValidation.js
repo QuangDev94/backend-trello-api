@@ -65,4 +65,49 @@ const updateColumnIdsInBoard = async (req, res, next) => {
     next(customError)
   }
 }
-export const boardValidation = { createNew, updateColumnIdsInBoard }
+
+const moveCardBetweenDifferentColumns = async (req, res, next) => {
+  // Đối với update ko cần required
+  const correctCondition = Joi.object({
+    currentCardId: Joi.string()
+      .required()
+      .pattern(OBJECT_ID_RULE)
+      .message(OBJECT_ID_RULE_MESSAGE),
+    prevColumnId: Joi.string()
+      .required()
+      .pattern(OBJECT_ID_RULE)
+      .message(OBJECT_ID_RULE_MESSAGE),
+    prevCardOrderIdsUpdated: Joi.array()
+      .required()
+      .items(
+        Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+      ),
+    nextColumnId: Joi.string()
+      .required()
+      .pattern(OBJECT_ID_RULE)
+      .message(OBJECT_ID_RULE_MESSAGE),
+    nextCardOrderIdsUpdated: Joi.array()
+      .required()
+      .items(
+        Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+      ),
+  })
+  try {
+    await correctCondition.validateAsync(req.body, {
+      abortEarly: false,
+    })
+    next()
+  } catch (error) {
+    const errorMessage = new Error(error).message
+    const customError = new ApiError(
+      StatusCodes.UNPROCESSABLE_ENTITY,
+      errorMessage,
+    )
+    next(customError)
+  }
+}
+export const boardValidation = {
+  createNew,
+  updateColumnIdsInBoard,
+  moveCardBetweenDifferentColumns,
+}

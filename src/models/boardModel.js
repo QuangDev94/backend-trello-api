@@ -48,9 +48,11 @@ const update = async (reqParamId, updateData) => {
       delete updateData[fieldName]
     }
   })
-  const transfromcolumnOrderIds = updateData.columnOrderIds.map(
-    (c) => new ObjectId(c),
-  )
+  if (updateData.columnOrderIds) {
+    updateData.columnOrderIds = updateData.columnOrderIds.map(
+      (c) => new ObjectId(c),
+    )
+  }
   try {
     const result = await GET_DB()
       .collection(BOARD_COLLECTION_NAME)
@@ -59,10 +61,7 @@ const update = async (reqParamId, updateData) => {
           _id: new ObjectId(reqParamId),
         },
         {
-          $set: {
-            ...updateData,
-            columnOrderIds: transfromcolumnOrderIds,
-          },
+          $set: updateData,
         },
         {
           returnDocument: "after",

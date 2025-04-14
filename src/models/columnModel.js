@@ -52,10 +52,14 @@ const update = async (reqParamId, updateData) => {
       delete updateData[fieldName]
     }
   })
-  const transfromCardOrderIds = updateData.cardOrderIds.map(
-    (c) => new ObjectId(c),
-  )
-  console.log("transfromCardOrderIds: ", transfromCardOrderIds)
+  console.log("updateData: ", updateData)
+  if (updateData.cardOrderIds) {
+    updateData.cardOrderIds = updateData.cardOrderIds.map(
+      (c) => new ObjectId(c),
+    )
+  }
+  console.log("updateData: ", updateData)
+
   try {
     const result = await GET_DB()
       .collection(COLUMN_COLLECTION_NAME)
@@ -64,9 +68,7 @@ const update = async (reqParamId, updateData) => {
           _id: new ObjectId(reqParamId),
         },
         {
-          $set: {
-            cardOrderIds: transfromCardOrderIds,
-          },
+          $set: updateData,
         },
         {
           returnDocument: "after",
