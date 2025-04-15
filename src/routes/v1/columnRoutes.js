@@ -6,6 +6,8 @@ const Router = express.Router()
 
 Router.route("/").post(columnValidation.createNew, columnController.createNew)
 
-Router.route("/:id").put(columnValidation.update, columnController.update)
+Router.route("/:id")
+  .put(columnValidation.update, columnController.update)
+  .delete(columnValidation.deleteColumn, columnController.deleteColumn)
 
 export const columnRoutes = Router
