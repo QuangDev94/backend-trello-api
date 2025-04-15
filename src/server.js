@@ -24,12 +24,21 @@ const START_SERVER = () => {
   app.use("/v1", APIs_V1)
   // Middleware xử lý lỗi
   app.use(errorHandlingMiddleware)
-
-  app.listen(env.APP_PORT, env.APP_HOST, () => {
-    console.log(
-      `Hello ${env.AUTHOR}, I am running at http://${env.APP_HOST}:${env.APP_PORT}/`,
-    )
-  })
+  // Run on production enviroment (render.com)
+  if (env.BUILD_MODE === "prod") {
+    app.listen(process.env.PORT, () => {
+      console.log(
+        `Hello ${env.AUTHOR}, Back-end server is running successfully at Port: ${process.env.PORT}`,
+      )
+    })
+  } else {
+    // Run on local
+    app.listen(env.LOCAL_DEV_APP_PORT, env.APP_HOST, () => {
+      console.log(
+        `Hello ${env.AUTHOR}, I am running at http://${env.LOCAL_DEV_APP_HOST}:${env.LOCAL_DEV_APP_PORT}/`,
+      )
+    })
+  }
   AsyncExitHook(() => {
     console.log("disconnecting DB")
     CLOSE_DB()

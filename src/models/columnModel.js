@@ -1,5 +1,5 @@
 import Joi from "joi"
-import { ObjectId, ReturnDocument } from "mongodb"
+import { ObjectId } from "mongodb"
 import { GET_DB } from "~/config/mongodb"
 import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from "~/utils/validators"
 
@@ -52,13 +52,11 @@ const update = async (reqParamId, updateData) => {
       delete updateData[fieldName]
     }
   })
-  console.log("updateData: ", updateData)
   if (updateData.cardOrderIds) {
     updateData.cardOrderIds = updateData.cardOrderIds.map(
       (c) => new ObjectId(c),
     )
   }
-  console.log("updateData: ", updateData)
 
   try {
     const result = await GET_DB()
