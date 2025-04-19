@@ -9,12 +9,15 @@ import { StatusCodes } from "http-status-codes"
 import { boardRoutes } from "./boardRoutes"
 import { columnRoutes } from "./columnRoutes"
 import { cardRoutes } from "./cardRoutes"
+import { userRoutes } from "./userRoutes"
 
 const Router = express.Router()
 // Check APIs v1/status
 Router.get("/status", (req, res) => {
   res.status(StatusCodes.OK).json({ message: "APIs V1 are ready" })
 })
+// User API
+Router.use("/users", userRoutes)
 // Board API
 Router.use("/boards", boardRoutes)
 // Column API
