@@ -1,8 +1,3 @@
-/**
- * Updated by trungquandev.com's author on August 17 2023
- * YouTube: https://youtube.com/@trungquandev
- * "A bit of fragrance clings to the hand that gives flowers!"
- */
 import "dotenv/config"
 
 export const env = {
@@ -12,4 +7,9 @@ export const env = {
   LOCAL_DEV_APP_PORT: process.env.LOCAL_DEV_APP_PORT,
   BUILD_MODE: process.env.BUILD_MODE,
   AUTHOR: process.env.AUTHOR,
+  WEBSITE_DOMANI_DEVELOPMENT: process.env.WEBSITE_DOMANI_DEVELOPMENT,
+  WEBSITE_DOMANI_PRODUCTION: process.env.WEBSITE_DOMANI_PRODUCTION,
+  BREVO_API_KEY: process.env.BREVO_API_KEY,
+  ADMIN_EMAIL_ADDRESS: process.env.ADMIN_EMAIL_ADDRESS,
+  ADMIN_EMAIL_NAME: process.env.ADMIN_EMAIL_NAME,
 }
