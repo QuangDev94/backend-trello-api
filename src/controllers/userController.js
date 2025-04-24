@@ -10,4 +10,22 @@ const createNew = async (req, res, next) => {
   }
 }
 
-export const userController = { createNew }
+const verify = async (req, res, next) => {
+  try {
+    const verifiedUser = await userService.verify(req.body)
+    res.status(StatusCodes.CREATED).json(verifiedUser)
+  } catch (error) {
+    next(error)
+  }
+}
+
+const login = async (req, res, next) => {
+  try {
+    const loginUser = await userService.login(req.body)
+    res.status(StatusCodes.CREATED).json(loginUser)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const userController = { createNew, verify, login }
