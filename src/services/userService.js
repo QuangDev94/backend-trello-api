@@ -9,6 +9,7 @@ import { WEBSITE_DOMAIN } from "~/utils/constants"
 import { BrevoProvider } from "~/providers/BrevoProvider"
 import { JwtProvider } from "~/providers/JwtProvider"
 import { env } from "~/config/environment"
+import { CloudinaryProvider } from "~/providers/CloudinaryProvider"
 
 const createNew = async (reqBody) => {
   try {
@@ -145,7 +146,7 @@ const refreshToken = async (clientRefreshToken) => {
     throw error
   }
 }
-const update = async (userId, reqBody) => {
+const update = async (userId, reqBody, userAvatarFile) => {
   try {
     // Query and check for sure
     const existUser = await userModel.findOneById(userId)
@@ -171,11 +172,20 @@ const update = async (userId, reqBody) => {
       updatedUser = await userModel.update(userId, {
         password: bcrypt.hashSync(reqBody.new_password, 8),
       })
+    } else if (userAvatarFile) {
+      // Trường hợp upload file lên Clound Storage, cụ thể là Cloudinary
+      const uploadResult = await CloudinaryProvider.streamUpload(
+        userAvatarFile.buffer,
+        "users",
+      )
+      // lưu lại url của file ảnh vào trong data base
+      updatedUser = await userModel.update(userId, {
+        avatar: uploadResult.secure_url,
+      })
     } else {
       // Case: change another infor, ex: displayName
       updatedUser = await userModel.update(userId, reqBody)
     }
-    console.log("updatedUser: -----", updatedUser.value)
     return pickUser(updatedUser.value)
   } catch (error) {
     throw error
