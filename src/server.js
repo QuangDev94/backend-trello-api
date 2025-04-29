@@ -17,7 +17,7 @@ const START_SERVER = () => {
     res.set("Cache-Control", "no-store")
     next()
   })
-  // Config Cookie-parser
+  // Config cookie-parser (enable req.cookies)
   app.use(cookieParser())
   // handle cors
   app.use(cors(corsOptions))
