@@ -6,6 +6,7 @@ import { cloneDeep } from "lodash"
 import { slugify } from "~/utils/formatters"
 import { columnModel } from "~/models/columnModel"
 import { cardModel } from "~/models/cardModel"
+import { DEFAULT_ITEMS_PER_PAGE, DEFAULT_PAGE } from "~/utils/constants"
 
 const createNew = async (reqBody) => {
   try {
@@ -88,9 +89,26 @@ const moveCardBetweenDifferentColumns = async (reqBody) => {
   }
 }
 
+const getBoards = async (userId, page, itemsPerPage) => {
+  try {
+    // Nếu ko tồn tại page và itemsPerPage từ phía FE thì BE sẽ cần phải luôn gán giá trị mặc định
+    if (!page) page = DEFAULT_PAGE
+    if (!itemsPerPage) itemsPerPage = DEFAULT_ITEMS_PER_PAGE
+    const result = await boardModel.getBoards(
+      userId,
+      parseInt(page, 10),
+      parseInt(itemsPerPage, 10),
+    )
+    return result
+  } catch (error) {
+    throw error
+  }
+}
+
 export const boardService = {
   createNew,
   getDetails,
   update,
   moveCardBetweenDifferentColumns,
+  getBoards,
 }

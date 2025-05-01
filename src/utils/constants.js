@@ -15,3 +15,6 @@ export const WEBSITE_DOMAIN =
   env.BUILD_MODE === "prod"
     ? env.WEBSITE_DOMANI_PRODUCTION
     : env.WEBSITE_DOMANI_DEVELOPMENT
+
+export const DEFAULT_PAGE = 1
+export const DEFAULT_ITEMS_PER_PAGE = 12
