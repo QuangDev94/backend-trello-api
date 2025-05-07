@@ -3,8 +3,10 @@ import { boardService } from "~/services/boardService"
 
 const createNew = async (req, res, next) => {
   try {
+    const userId = req.jwtDecoded._id
+
     //     Điều hướng dữ liệu sang tầng service
-    const createdBoard = await boardService.createNew(req.body)
+    const createdBoard = await boardService.createNew(userId, req.body)
     //     Có kết quả sẽ trả về phía client tại tầng controller
     res.status(StatusCodes.CREATED).json(createdBoard)
   } catch (error) {
@@ -17,7 +19,8 @@ const createNew = async (req, res, next) => {
 
 const getDetails = async (req, res, next) => {
   try {
-    const detailsBoard = await boardService.getDetails(req.params.id)
+    const userId = req.jwtDecoded._id
+    const detailsBoard = await boardService.getDetails(userId, req.params.id)
     res.status(StatusCodes.OK).json(detailsBoard)
   } catch (error) {
     next(error)
