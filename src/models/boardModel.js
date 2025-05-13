@@ -6,6 +6,7 @@ import { BOARD_TYPES } from "~/utils/constants"
 import { columnModel } from "./columnModel"
 import { cardModel } from "./cardModel"
 import { pagingSkipValue } from "~/utils/algorithms"
+import { userModel } from "./userModel"
 
 // Define Collection (Name & Schema)
 const BOARD_COLLECTION_NAME = "boards"
@@ -42,8 +43,6 @@ const createNew = async (userId, data) => {
       ...validData,
       ownerIds: [new ObjectId(userId)],
     }
-    console.log("validData: ", validData)
-    console.log("newBoardToAdd: ", newBoardToAdd)
 
     const createdBoard = await GET_DB()
       .collection(BOARD_COLLECTION_NAME)
@@ -136,6 +135,27 @@ const getDetails = async (userId, boardId) => {
             localField: "_id",
             foreignField: "boardId",
             as: "cards",
+          },
+        },
+        {
+          $lookup: {
+            from: userModel.USER_COLLECTION_NAME,
+            localField: "ownerIds",
+            foreignField: "_id",
+            // định nghĩa tên trường trả về cho FE
+            as: "owners",
+            // pipeline trong lookup là để xử lý 1 hoặc nhiều luồng cần thiết
+            // $project để chỉ vài field ko muốn lấy về bằng cách gán nó giá trị 0
+            pipeline: [{ $project: { password: 0, verifyToken: 0 } }],
+          },
+        },
+        {
+          $lookup: {
+            from: userModel.USER_COLLECTION_NAME,
+            localField: "memberIds",
+            foreignField: "_id",
+            as: "members",
+            pipeline: [{ $project: { password: 0, verifyToken: 0 } }],
           },
         },
       ])
