@@ -122,6 +122,32 @@ const deleteManyByColumnId = async (columnId) => {
   }
 }
 
+/**
+ * Đẩy 1 comment vào đầu mảng comments
+ * - trong Js thì unshift là thêm phần tử vào đầu mảng (push là thêm vào cuối mảng)
+ * - trong mongoDb hiện tại chỉ có $push - mặc định đẩy phần tử vào cuối
+ * Vẫn dùng $push, nhưng bọc data vào Array để trong $each và chỉ định $position: 0
+ */
+const unshiftNewComment = async (cardId, commentData) => {
+  try {
+    const result = await GET_DB()
+      .collection(CARD_COLLECTION_NAME)
+      .findOneAndUpdate(
+        {
+          _id: new ObjectId(cardId),
+        },
+        {
+          $push: { comments: { $each: [commentData], $position: 0 } },
+        },
+        {
+          returnDocument: "after",
+        },
+      )
+    return result
+  } catch (error) {
+    throw new Error(error)
+  }
+}
 export const cardModel = {
   CARD_COLLECTION_NAME,
   CARD_COLLECTION_SCHEMA,
@@ -129,4 +155,5 @@ export const cardModel = {
   findOneById,
   update,
   deleteManyByColumnId,
+  unshiftNewComment,
 }
