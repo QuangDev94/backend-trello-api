@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 import { StatusCodes } from "http-status-codes"
 import { boardModel } from "~/models/boardModel"
 import { invitationModel } from "~/models/invitationModel"
@@ -7,7 +8,6 @@ import { BOARD_INVITATION_STATUS, INVITATION_TYPES } from "~/utils/constants"
 import { pickUser } from "~/utils/formatters"
 
 const createNewBoardInvitation = async (reqBody, inviterId) => {
-  // eslint-disable-next-line no-useless-catch
   try {
     const inviter = await userModel.findOneById(inviterId)
     const invitee = await userModel.findOneByEmail(reqBody.inviteeEmail)
@@ -51,6 +51,24 @@ const createNewBoardInvitation = async (reqBody, inviterId) => {
   }
 }
 
+const getInvitations = async (userId) => {
+  try {
+    const getInvitations = await invitationModel.findByUser(userId)
+    // Vì dữ liệu inviter, invitee, board đang là giá trị mảng 1 phần tử nên phải thay đổi thành jsonObject trước khi trả về cho FE
+    const resInvitations = getInvitations.map((i) => {
+      return {
+        ...i,
+        inviter: i.inviter[0] || {},
+        invitee: i.invitee[0] || {},
+        board: i.board[0] || {},
+      }
+    })
+    return resInvitations
+  } catch (error) {
+    throw error
+  }
+}
 export const invitationService = {
   createNewBoardInvitation,
+  getInvitations,
 }
