@@ -9,6 +9,10 @@ import { env } from "./config/environment"
 import { APIs_V1 } from "~/routes/v1"
 import { errorHandlingMiddleware } from "./middlewares/errorHandlingMiddleware"
 import cookieParser from "cookie-parser"
+// Xử lý socket real-time với gói socket.io
+import socketIo from "socket.io"
+import http from "http"
+import { inviteUserToBoardSocket } from "./sockets/InviteUserToBoardSocket"
 
 const START_SERVER = () => {
   const app = express()
@@ -19,7 +23,7 @@ const START_SERVER = () => {
   })
   // Config cookie-parser (enable req.cookies)
   app.use(cookieParser())
-  // handle cors
+  // handle cors dành cho việc gọi API
   app.use(cors(corsOptions))
   // enable req.body json data
   app.use(express.json())
@@ -27,16 +31,27 @@ const START_SERVER = () => {
   app.use("/v1", APIs_V1)
   // Middleware xử lý lỗi
   app.use(errorHandlingMiddleware)
+
+  // Tạo server mới bọc app của express để làm real-time với socket.io vì socket chỉ hỗ trợ server in http
+  const server = http.createServer(app)
+  // khởi tạo biến io với server và cors dành cho việc xử lý web socket
+  const io = socketIo(server, { cors: corsOptions })
+  io.on("connection", (socket) => {
+    // Lắng nghe sự kiện mà client emit có tên: FE_USER_INVITED_TO_BOARD
+    inviteUserToBoardSocket(socket)
+  })
+
   // Run on production enviroment (render.com)
   if (env.BUILD_MODE === "prod") {
-    app.listen(process.env.PORT, () => {
+    // Dùng server.listen thay vì app.listen vì lúc này server đã bao gồm express app và đã config socket.io
+    server.listen(process.env.PORT, () => {
       console.log(
         `Hello ${env.AUTHOR}, Back-end server is running successfully at Port: ${process.env.PORT}`,
       )
     })
   } else {
     // Run on local
-    app.listen(env.LOCAL_DEV_APP_PORT, env.APP_HOST, () => {
+    server.listen(env.LOCAL_DEV_APP_PORT, env.APP_HOST, () => {
       console.log(
         `Hello ${env.AUTHOR}, I am running at http://${env.LOCAL_DEV_APP_HOST}:${env.LOCAL_DEV_APP_PORT}/`,
       )
