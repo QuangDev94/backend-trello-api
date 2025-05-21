@@ -182,6 +182,21 @@ const pushColumnOrderIds = async (column) => {
   }
 }
 
+const pushUserIdIntoMembers = async (boardId, userId) => {
+  try {
+    const result = await GET_DB()
+      .collection(BOARD_COLLECTION_NAME)
+      .findOneAndUpdate(
+        { _id: new ObjectId(boardId) },
+        { $push: { memberIds: new ObjectId(userId) } },
+        { returnDocument: "after" },
+      )
+
+    return result
+  } catch (error) {
+    throw new Error(error)
+  }
+}
 const pullColumnOrderIds = async (column) => {
   try {
     const result = await GET_DB()
@@ -258,6 +273,7 @@ export const boardModel = {
   findOneById,
   getDetails,
   pushColumnOrderIds,
+  pushUserIdIntoMembers,
   update,
   pullColumnOrderIds,
   getBoards,
