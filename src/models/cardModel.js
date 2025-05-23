@@ -1,6 +1,7 @@
 import Joi from "joi"
 import { ObjectId } from "mongodb"
 import { GET_DB } from "~/config/mongodb"
+import { CARD_MEMBER_ACTIONS } from "~/utils/constants"
 import {
   EMAIL_RULE,
   EMAIL_RULE_MESSAGE,
@@ -46,7 +47,6 @@ const INVALID_UPDATE_FIELD = ["_id", "createdAt", "boardId"]
 const validateBeforeCreate = async (data) => {
   return await CARD_COLLECTION_SCHEMA.validateAsync(data, { abortEarly: false })
 }
-
 const createNew = async (data) => {
   try {
     const validData = await validateBeforeCreate(data)
@@ -148,6 +148,32 @@ const unshiftNewComment = async (cardId, commentData) => {
     throw new Error(error)
   }
 }
+
+const updateMembers = async (cardId, incomingMemberInfo) => {
+  try {
+    let updateCondition = {}
+    if (incomingMemberInfo.action === CARD_MEMBER_ACTIONS.ADD) {
+      updateCondition = {
+        $push: { memberIds: new ObjectId(incomingMemberInfo.userId) },
+      }
+    }
+    if (incomingMemberInfo.action === CARD_MEMBER_ACTIONS.REMOVE) {
+      updateCondition = {
+        $pull: { memberIds: new ObjectId(incomingMemberInfo.userId) },
+      }
+    }
+
+    const result = await GET_DB()
+      .collection(CARD_COLLECTION_NAME)
+      .findOneAndUpdate({ _id: new ObjectId(cardId) }, updateCondition, {
+        returnDocument: "after",
+      })
+
+    return result
+  } catch (error) {
+    throw new Error(error)
+  }
+}
 export const cardModel = {
   CARD_COLLECTION_NAME,
   CARD_COLLECTION_SCHEMA,
@@ -156,4 +182,5 @@ export const cardModel = {
   update,
   deleteManyByColumnId,
   unshiftNewComment,
+  updateMembers,
 }

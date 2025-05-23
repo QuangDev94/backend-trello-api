@@ -42,6 +42,11 @@ const update = async (cardId, reqBody, cardCoverFile, userInfo) => {
         userEmail: userInfo.email,
       }
       updatedCard = await cardModel.unshiftNewComment(cardId, commentData)
+    } else if (updateData.incomingMemberInfo) {
+      updatedCard = await cardModel.updateMembers(
+        cardId,
+        updateData.incomingMemberInfo,
+      )
     } else {
       // case update common: title,description
       updatedCard = await cardModel.update(cardId, updateData)
