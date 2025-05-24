@@ -89,7 +89,7 @@ const moveCardBetweenDifferentColumns = async (reqBody) => {
   }
 }
 
-const getBoards = async (userId, page, itemsPerPage) => {
+const getBoards = async (userId, page, itemsPerPage, queryFilter) => {
   try {
     // Nếu ko tồn tại page và itemsPerPage từ phía FE thì BE sẽ cần phải luôn gán giá trị mặc định
     if (!page) page = DEFAULT_PAGE
@@ -98,6 +98,7 @@ const getBoards = async (userId, page, itemsPerPage) => {
       userId,
       parseInt(page, 10),
       parseInt(itemsPerPage, 10),
+      queryFilter,
     )
     return result
   } catch (error) {
