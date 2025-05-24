@@ -213,7 +213,7 @@ const pullColumnOrderIds = async (column) => {
   }
 }
 
-const getBoards = async (userId, page, itemsPerPage) => {
+const getBoards = async (userId, page, itemsPerPage, queryFilter) => {
   try {
     const queryConditions = [
       // Điều kiện 1: board chưa bị xóa
@@ -228,6 +228,18 @@ const getBoards = async (userId, page, itemsPerPage) => {
         ],
       },
     ]
+
+    if (queryFilter) {
+      Object.keys(queryFilter).forEach((key) => {
+        // Có phân biệt chữ hoa chữ thường
+        // queryConditions.push({ [key]: { $regex: queryFilter[key] } })
+        // Ko phân biệt chữ hoa chữ thường
+        queryConditions.push({
+          [key]: { $regex: new RegExp(queryFilter[key], "i") },
+        })
+      })
+    }
+
     const query = await GET_DB()
       .collection(BOARD_COLLECTION_NAME)
       .aggregate(
