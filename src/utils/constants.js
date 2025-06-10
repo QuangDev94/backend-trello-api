@@ -11,9 +11,11 @@ export const BOARD_TYPES = {
   PRIVATE: "private",
 }
 
+console.log(env.BUILD_MODE)
 export const WEBSITE_DOMAIN =
   env.BUILD_MODE === "prod"
     ? env.WEBSITE_DOMANI_PRODUCTION
+    
     : env.WEBSITE_DOMANI_DEVELOPMENT
 
 export const DEFAULT_PAGE = 1
