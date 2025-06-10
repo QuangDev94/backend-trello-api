@@ -46,7 +46,11 @@ const START_SERVER = () => {
     // Dùng server.listen thay vì app.listen vì lúc này server đã bao gồm express app và đã config socket.io
     server.listen(process.env.PORT, () => {
       console.log(
-        `Hello ${env.AUTHOR}, Back-end server is running successfully at Port: ${process.env.PORT}`,
+        `Hello ${
+          env.AUTHOR
+        }, Back-end server is running successfully at Port: ${
+          process.env.PORT || 4000
+        }`,
       )
     })
   } else {
